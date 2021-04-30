@@ -1,5 +1,5 @@
 import pandas as pd
-import csv, os, sys
+import csv, os, sys, platform
 import pdfkit
 
 class Calculations():
@@ -33,23 +33,44 @@ class Calculations():
         self.export()
 
     def export(self):
-        self.df.to_csv(r'files\\data.csv')
+        if platform.system() == "Windows":
+            self.df.to_csv(r'files\\data.csv')
+        else:
+            self.df.to_csv(r'files/data.csv')
+        
 
     def export_to_pdf(self):
-        self.df.to_html(r"files\\to_html.html")
-        pdfkit.from_file(r"files\\to_html.html", "exported.pdf")
+        if platform.system() == "Windows":
+            self.df.to_html(r"files\\to_html.html")
+            pdfkit.from_file(r"files\\to_html.html", "exported.pdf")
+        else:
+            self.df.to_html(r"files/to_html.html")
+            pdfkit.from_file(r"files/to_html.html", "exported.pdf")
+
 
 def get_file():
     global not_df
-    if os.path.isfile(r"files\\data.csv"):
-        not_df = pd.read_csv(r"files\\data.csv", index_col= 0)
-        print('done')
+    if platform.system() == "Windows":
+        if os.path.isfile(r"files\\data.csv"):
+            not_df = pd.read_csv(r"files\\data.csv", index_col= 0)
+            print('done')
+        else:
+            data = {'Topic':['Topic'], "Amount" :[0], "Date":["Date"], "Total": [0]}
+            file_create = pd.DataFrame(data)
+            os.mkdir(r"files")
+            file_create.to_csv(r"files\\data.csv")
+            not_df=pd.read_csv(r"files\\data.csv", index_col= 0)
     else:
-        data = {'Topic':['Topic'], "Amount" :[0], "Date":["Date"], "Total": [0]}
-        file_create = pd.DataFrame(data)
-        os.mkdir(r"D:\\Dev\\Python\\DataScience\\FinanManagement\\files")
-        file_create.to_csv(r"files\\data.csv")
-        not_df=pd.read_csv(r"files\\data.csv", index_col= 0)
+        if os.path.isfile(r"files/data.csv"):
+            not_df = pd.read_csv(r"files/data.csv", index_col= 0)
+            print('done')
+        else:
+            data = {'Topic':['Topic'], "Amount" :[0], "Date":["Date"], "Total": [0]}
+            file_create = pd.DataFrame(data)
+            os.mkdir(r"files")
+            file_create.to_csv(r"files/data.csv")
+            not_df=pd.read_csv(r"files/data.csv", index_col= 0)
+
 
 if __name__ == "__main__":
     get_file()
